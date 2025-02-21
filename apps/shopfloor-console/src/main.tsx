@@ -1,13 +1,41 @@
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
-import App from './app/app';
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+import App from './app';
+import { createHashRouter, RouterProvider } from 'react-router-dom';
+import OverviewPage from './pages/overview';
+import DevicesPage from './pages/devices';
+import { IxApplicationContext } from '@siemens/ix-react';
+import './i18n';
+import { provideGlobalGridOptions } from 'ag-grid-community';
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+provideGlobalGridOptions({
+  theme: 'legacy',
+});
 
-root.render(
+ModuleRegistry.registerModules([AllCommunityModule]);
+
+const router = createHashRouter([
+  {
+    path: '/',
+    element: <App />,
+    children: [
+      {
+        path: '/',
+        element: <OverviewPage />,
+      },
+      {
+        path: '/devices',
+        element: <DevicesPage />,
+      },
+    ],
+  },
+]);
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <IxApplicationContext>
+      <RouterProvider router={router}></RouterProvider>
+    </IxApplicationContext>
   </StrictMode>
 );
